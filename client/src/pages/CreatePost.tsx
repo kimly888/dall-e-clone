@@ -15,13 +15,19 @@ export const CreatePost = () => {
   const [generatingImage, setGeneratingImage] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+  // Calls backend
   const generateImage = () => {};
 
   const handleSubmit = () => {};
 
-  const handleChange = (e) => {};
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const handleSurpriseMe = () => {};
+  const handleSurpriseMe = () => {
+    const randomPrompt = getRandomPrompt(form.prompt);
+    setForm({ ...form, prompt: randomPrompt });
+  };
 
   return (
     <section className="max-w-7xl mx-auto">
