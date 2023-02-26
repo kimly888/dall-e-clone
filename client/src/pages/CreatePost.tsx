@@ -16,7 +16,30 @@ export const CreatePost = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   // Calls backend
-  const generateImage = () => {};
+  const generateImage = async () => {
+    if (form.prompt) {
+      try {
+        setGeneratingImage(true);
+        const response = await fetch("http://localhost:8080/api/v1/dalle", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: form.prompt }),
+        });
+
+        const data = await response.json();
+        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+      } catch (error) {
+        console.log(error);
+        alert(error);
+      } finally {
+        setGeneratingImage(false);
+      }
+    } else {
+      alert("Please enter a prompt");
+    }
+  };
 
   const handleSubmit = () => {};
 
@@ -47,14 +70,14 @@ export const CreatePost = () => {
             labelName="Your name"
             type="text"
             name="name"
-            placeholder="John Doe"
+            placeholder="Ex. John Doe"
             value={form.name}
             handleChange={handleChange}
           />
           <FormField
             labelName="Prompt"
             type="text"
-            name="name"
+            name="prompt"
             placeholder="A hamburger in the shape of a Rubik’s cube, professional food photography"
             value={form.prompt}
             handleChange={handleChange}
