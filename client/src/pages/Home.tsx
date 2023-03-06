@@ -5,18 +5,21 @@ import { Loader, Card, FormField } from "../components";
 type CardProps = {
   data: [
     post?: {
-      _id?: string;
+      _id: string;
+      name: string;
+      prompt: string;
+      photo: string;
     }
   ];
   title: string;
 };
 
-const RenderCards = ({ data, title }: CardProps) => {
+const RenderCards = ({ data, title }: CardProps): JSX.Element => {
   if (data?.length > 0) {
     return (
       <>
         {data.map((post) => {
-          <Card key={post?._id} {...post} />;
+          return <Card key={post?._id} {...post} />;
         })}
       </>
     );
@@ -29,9 +32,36 @@ const RenderCards = ({ data, title }: CardProps) => {
 
 export const Home = () => {
   const [loading, setLoading] = useState(false);
-  const [allPosts, setAllPosts] = useState(null);
+  // NEED TO TYPE allPosts data LATER
+  const [allPosts, setAllPosts] = useState<any>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchPosts = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/post", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setAllPosts(result.data.reverse());
+      }
+    } catch (err) {
+      alert(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -46,7 +76,13 @@ export const Home = () => {
       </div>
 
       <div className="mt-16">
-        <FormField />
+        <FormField
+          type="text"
+          labelName="Gallery"
+          placeholder="Search..."
+          name="gallery"
+          value={searchQuery}
+        />
       </div>
 
       <div className="mt-16">
@@ -65,9 +101,9 @@ export const Home = () => {
 
             <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchQuery ? (
-                <RenderCards data={[]} title="No search results found" />
+                <RenderCards data={allPosts} title="No search results found" />
               ) : (
-                <RenderCards data={[]} title="No posts found" />
+                <RenderCards data={allPosts} title="No posts found" />
               )}
             </div>
           </>
