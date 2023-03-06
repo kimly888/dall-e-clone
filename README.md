@@ -1,11 +1,10 @@
 # WordVision
 
-WordVision is a cutting-edge AI-powered application that generates high-quality images based on textual input. Using advanced Natural Language Processing (NLP) algorithms, WordVision can understand the meaning and context of textual input and create stunning, unique images that accurately represent the text.
+WordVision is a Dall-E/Midjourney clone that generates high-quality images based on textual input. 
 
 ## Features
 
 -   Generate high-quality images based on textual input
--   Utilize advanced NLP algorithms to understand textual input and create accurate, unique images
 -   Fast and efficient image generation with minimal latency
 -   User-friendly interface for easy input and output of text and images
 -   Built using modern web development technologies, including the MERN stack, TypeScript, and Tailwind CSS
