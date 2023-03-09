@@ -4,7 +4,7 @@ import { Loader, Card, FormField } from "../components";
 
 type CardProps = {
   data: [
-    post?: {
+    post: {
       _id: string;
       name: string;
       prompt: string;
@@ -36,17 +36,22 @@ export const Home = () => {
   const [allPosts, setAllPosts] = useState<any>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<any>(null);
+  const [searchTimeout, setSearchTimeout] = useState<number | undefined>(0);
 
   const fetchPosts = async () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/post", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "https://wordvision.onrender.com/api/v1/post",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
@@ -63,6 +68,31 @@ export const Home = () => {
     fetchPosts();
   }, []);
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Reset timeout every time keystroke
+    clearTimeout(searchTimeout);
+
+    setSearchQuery(e.target.value);
+
+    setSearchTimeout(
+      // Set a time for the user to search so that a search request isn't called every key stroke
+      setTimeout(() => {
+        const searchResult = allPosts.filter(
+          (post: {
+            _id: string;
+            name: string;
+            prompt: string;
+            photo: string;
+          }) =>
+            post.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            post.prompt.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+        setSearchResults(searchResult);
+      }, 500)
+    );
+  };
+
   return (
     <section className="max-w-7xl mx-auto">
       <div>
@@ -78,10 +108,11 @@ export const Home = () => {
       <div className="mt-16">
         <FormField
           type="text"
-          labelName="Gallery"
+          labelName="Search posts"
+          name="text"
           placeholder="Search..."
-          name="gallery"
           value={searchQuery}
+          handleChange={handleSearchChange}
         />
       </div>
 
@@ -101,7 +132,10 @@ export const Home = () => {
 
             <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-3">
               {searchQuery ? (
-                <RenderCards data={allPosts} title="No search results found" />
+                <RenderCards
+                  data={searchResults}
+                  title="No search results found"
+                />
               ) : (
                 <RenderCards data={allPosts} title="No posts found" />
               )}
