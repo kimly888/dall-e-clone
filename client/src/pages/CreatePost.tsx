@@ -7,7 +7,11 @@ import { FormField, Loader } from "../components";
 
 export const CreatePost = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    name: string;
+    prompt: string;
+    photo: string;
+  }>({
     name: "",
     prompt: "",
     photo: "",
